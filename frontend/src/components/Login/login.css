@@ -1,0 +1,17 @@
+.login-page {
+  margin-top: 100px;
+  margin-left: 100px;
+  margin-right: 100px;
+  text-align: center;
+}
+
+.login-button {
+  padding-right: 10px;
+}
+
+.quote {
+  font-family: "Lobster Two";
+  font-size: large;
+  padding-top: 30px;
+  text-align: center;
+}
