@@ -10,7 +10,7 @@ router.post("/sendotp", (req, res) => {
 
     res.send({
       status: true,
-      payload: 1234
+      payload: "Request Sent Successfully!"
     });
   } catch (error) {
     res.send({
