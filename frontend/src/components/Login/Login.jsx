@@ -1,19 +1,37 @@
 import React, { Component } from "react";
 import "./login.css";
-import axios from "axios";
+// import axios from "axios";
+import { Redirect } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 
 class Login extends Component {
   constructor() {
     super();
     this.state = {
-      userID: ""
+      userID: "",
+      to: "",
+      redirect: false
     };
   }
+
+  setRedirect = to => {
+    this.setState({
+      redirect: true,
+      to: `/${to}/login`
+    });
+  };
+
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to={this.state.to} />;
+    }
+  };
 
   render() {
     return (
       <div>
+        {this.renderRedirect()}
+
         <div className="quote">
           Coffee is a beverage that puts one to sleep when not drank. - Alphonse
           Allais
@@ -21,19 +39,19 @@ class Login extends Component {
 
         <div className="login-page">
           <span className="login-button">
-            <Button color="orange">
+            <Button color="orange" onClick={() => this.setRedirect("merchant")}>
               <Icon name="coffee"></Icon>
               Merchant Login
             </Button>
           </span>
           <span className="login-button">
-            <Button className="login-button" color="blue">
+            <Button color="blue" onClick={() => this.setRedirect("delivery")}>
               {" "}
               <Icon name="truck"></Icon>Delivery Login
             </Button>
           </span>
           <span className="login-button">
-            <Button className="login-button" color="green">
+            <Button color="green" onClick={() => this.setRedirect("customer")}>
               {" "}
               <Icon name="user"></Icon>Customer Login
             </Button>

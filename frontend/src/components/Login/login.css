@@ -2,6 +2,7 @@
   margin-top: 100px;
   margin-left: 100px;
   margin-right: 100px;
+  margin-bottom: 0px;
   text-align: center;
 }
 
@@ -14,4 +15,11 @@
   font-size: large;
   padding-top: 30px;
   text-align: center;
+}
+
+/*  Login Form CSS */
+
+.login-form {
+  margin-top: 50px;
+  margin-left: 440px;
 }
