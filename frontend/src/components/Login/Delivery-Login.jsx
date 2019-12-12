@@ -1,13 +1,18 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import { Button, Form, Input } from "semantic-ui-react";
+import axios from "axios";
+import { serverUrl } from "../../config.json";
+
 class DeliveryLogin extends Component {
   constructor() {
     super();
     this.state = {
       name: "",
       mobileno: "",
-      sendOTP: false,
-      otp: ""
+      otpStatus: false,
+      otp: "",
+      redirect: false
     };
   }
 
@@ -15,14 +20,14 @@ class DeliveryLogin extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  otpSent = () => {
-    this.setState({
-      sendOTP: true
-    });
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to="/delivery"></Redirect>;
+    }
   };
 
   otpForm = () => {
-    if (this.state.sendOTP) {
+    if (this.state.otpStatus) {
       return (
         <Form.Field width="6">
           <label>Enter OTP</label>
@@ -38,18 +43,52 @@ class DeliveryLogin extends Component {
     }
   };
 
+  sendOTP = async () => {
+    this.setState({
+      otpStatus: true
+    });
+
+    const result = await axios.post(`${serverUrl}/sendotp`, {
+      mobileno: this.state.mobileno
+    });
+
+    console.log(result.data);
+  };
+
+  verifyOTP = async () => {
+    const result = await axios.post(`${serverUrl}/verifyotp`, {
+      otp: this.state.otp
+    });
+
+    console.log(result.data);
+
+    if (result.data.status) {
+      this.setState({
+        redirect: true
+      });
+    }
+  };
+
   buttonAction = () => {
-    if (this.state.sendOTP) {
-      return "Register";
+    if (this.state.otpStatus) {
+      return (
+        <Button primary onClick={this.verifyOTP}>
+          Register
+        </Button>
+      );
     } else {
-      return "Send OTP";
+      return (
+        <Button primary onClick={this.sendOTP}>
+          Send OTP
+        </Button>
+      );
     }
   };
 
   render() {
     return (
       <div className="login-form">
-        {" "}
+        {this.renderRedirect()}{" "}
         <Form>
           <Form.Field width="6">
             <label>Full Name</label>
@@ -73,9 +112,8 @@ class DeliveryLogin extends Component {
           </Form.Field>
 
           {this.otpForm()}
-          <Button primary onClick={this.otpSent}>
-            {this.buttonAction()}
-          </Button>
+
+          {this.buttonAction()}
         </Form>
       </div>
     );

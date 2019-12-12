@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import { Button, Form, Input } from "semantic-ui-react";
 import axios from "axios";
 import { serverUrl } from "../../config.json";
@@ -10,12 +11,19 @@ class MerchantLogin extends Component {
       name: "",
       mobileno: "",
       otpStatus: false,
-      otp: ""
+      otp: "",
+      redirect: false
     };
   }
 
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
+  };
+
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to="/merchant"></Redirect>;
+    }
   };
 
   otpForm = () => {
@@ -53,6 +61,12 @@ class MerchantLogin extends Component {
     });
 
     console.log(result.data);
+
+    if (result.data.status) {
+      this.setState({
+        redirect: true
+      });
+    }
   };
 
   buttonAction = () => {
@@ -74,7 +88,7 @@ class MerchantLogin extends Component {
   render() {
     return (
       <div className="login-form">
-        {" "}
+        {this.renderRedirect()}{" "}
         <Form>
           <Form.Field width="6">
             <label>Full Name</label>
