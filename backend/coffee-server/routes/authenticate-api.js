@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 
 // Send OTP route
 
@@ -27,10 +28,17 @@ router.post("/verifyotp", (req, res) => {
 
   try {
     // call api to verify otp
+    const user = {
+      userID: "M101",
+      name: "Shubham"
+    };
 
-    res.send({
-      status: true,
-      payload: true
+    jwt.sign({ user }, "secretkey", (err, token) => {
+      res.json({
+        token,
+        status: true,
+        payload: true
+      });
     });
   } catch (error) {
     res.send({
@@ -39,5 +47,18 @@ router.post("/verifyotp", (req, res) => {
     });
   }
 });
+
+// // Verify Token
+
+// function verifyToken(req, res, next) {
+//   // Get the auth header value
+//   const bearerHeader = req.headers["authorization"];
+//   // Check if bearer is undefined
+//   if (typeof bearerHeader !== "undefined") {
+//   } else {
+//     // Forbidden
+//     res.sendStatus(403);
+//   }
+// }
 
 module.exports = router;
