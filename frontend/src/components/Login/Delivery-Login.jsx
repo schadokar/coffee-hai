@@ -79,7 +79,7 @@ class DeliveryLogin extends Component {
     if (this.state.otpStatus) {
       return (
         <Button primary onClick={this.verifyOTP}>
-          Register
+          Sign In
         </Button>
       );
     } else {
@@ -96,16 +96,6 @@ class DeliveryLogin extends Component {
       <div className="login-form">
         {this.renderRedirect()}{" "}
         <Form>
-          <Form.Field width="6">
-            <label>Full Name</label>
-            <Input
-              type="text"
-              name="name"
-              value={this.state.name}
-              onChange={this.onChange}
-              placeholder="Full Name"
-            />
-          </Form.Field>
           <Form.Field width="6">
             <label>Mobile no.</label>
             <Input
