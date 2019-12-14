@@ -1,34 +1,47 @@
+require("dotenv").config();
 const axios = require("axios");
-const endpoint = "http://localhost:5000";
+const endpoint = process.env.REDIS_LOCAL_OTP;
 /**
  *
- * @param {string} mobileNo - mobileno of the user
+ * @param {string} mobileno - mobileno of the user
  */
-const redisSendOTP = async mobileNo => {
-  // generate a 4 digit otp
-  const otp = generateOTP();
+const redisSendOTP = async mobileno => {
+  try {
+    // generate a 4 digit otp
+    const otp = generateOTP();
 
-  console.log(otp);
+    console.log(otp);
 
-  // set the otp to mobileno
-  const result = await axios.post(`${endpoint}/set`, {
-    key: mobileNo,
-    value: otp.toString()
-  });
+    // set the otp to mobileno
+    const result = await axios.post(`${endpoint}/set`, {
+      key: mobileno,
+      value: otp.toString()
+    });
 
-  console.log(result.status);
+    console.log(result.status);
 
-  return { status: true, payload: "OTP sent successfully!" };
+    if (result.status) {
+      return { status: true, payload: "OTP sent successfully!" };
+    }
+
+    return { status: false, payload: "Unable to send OTP!" };
+  } catch (error) {
+    return {
+      status: false,
+      payload: "Error while sending the OTP",
+      error: error
+    };
+  }
 };
 
 /**
  * Verify the OTP sent to the user
- * @param {string} mobileNo - mobileno of the user
- * @param {number} otp - otp enter by the user
+ * @param {string} mobileno - mobileno of the user
+ * @param {string} otp - otp enter by the user
  */
-const redisVerifyOTP = async (mobileNo, otp) => {
+const redisVerifyOTP = async (mobileno, otp) => {
   try {
-    const sentOTP = await axios.get(`${endpoint}/get/${mobileNo}`);
+    const sentOTP = await axios.get(`${endpoint}/get/${mobileno}`);
 
     if (parseInt(sentOTP.data) === parseInt(otp)) {
       return {
@@ -44,7 +57,7 @@ const redisVerifyOTP = async (mobileNo, otp) => {
   } catch (error) {
     return {
       status: false,
-      payload: "Something went Wrong!",
+      payload: "Something went Wrong while verifying the OTP!",
       error: error
     };
   }

@@ -6,9 +6,10 @@ const otpMethod = require("../methods");
 // Send OTP route
 router.post("/sendotp", async (req, res) => {
   const { mobileno } = req.body;
+
   try {
     // call api to get the OTP
-    const result = await otpMethod.redisSendOTP(mobileno);
+    const result = await otpMethod.sendOTP(mobileno, "local-redis");
 
     res.send({
       status: true,
@@ -24,15 +25,14 @@ router.post("/sendotp", async (req, res) => {
 
 // Verify OTP
 router.post("/verifyotp", async (req, res) => {
-  const { otp, userID, name } = req.body;
+  const { otp, mobileno, name } = req.body;
 
   try {
     // call api to verify otp
-
-    const result = await otpMethod.redisVerifyOTP(userID, otp);
+    const result = await otpMethod.verifyOTP(mobileno, otp, "local-redis");
 
     if (result.status) {
-      const user = { userID, name };
+      const user = { userID: mobileno, name };
 
       // sign the jwt token with the userID and name
       jwt.sign({ user }, "secretkey", (err, token) => {
@@ -53,8 +53,7 @@ router.post("/verifyotp", async (req, res) => {
   } catch (error) {
     res.send({
       status: false,
-      payload: "Unable to verify the OTP",
-      error: error
+      payload: "Unable to verify the OTP"
     });
   }
 });
