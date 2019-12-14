@@ -1,17 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const otpMethod = require("../methods");
 
 // Send OTP route
-
-router.post("/sendotp", (req, res) => {
+router.post("/sendotp", async (req, res) => {
   const { mobileno } = req.body;
   try {
     // call api to get the OTP
+    const result = await otpMethod.redisSendOTP(mobileno);
 
     res.send({
       status: true,
-      payload: "Request Sent Successfully!"
+      payload: result.payload
     });
   } catch (error) {
     res.send({
@@ -22,28 +23,38 @@ router.post("/sendotp", (req, res) => {
 });
 
 // Verify OTP
-
-router.post("/verifyotp", (req, res) => {
-  const { otp } = req.body;
+router.post("/verifyotp", async (req, res) => {
+  const { otp, userID, name } = req.body;
 
   try {
     // call api to verify otp
-    const user = {
-      userID: "M101",
-      name: "Shubham"
-    };
 
-    jwt.sign({ user }, "secretkey", (err, token) => {
-      res.json({
-        token,
-        status: true,
-        payload: true
+    const result = await otpMethod.redisVerifyOTP(userID, otp);
+
+    if (result.status) {
+      const user = { userID, name };
+
+      // sign the jwt token with the userID and name
+      jwt.sign({ user }, "secretkey", (err, token) => {
+        if (err) throw err;
+
+        res.json({
+          token,
+          status: true,
+          payload: result.payload
+        });
       });
-    });
+    } else {
+      res.send({
+        status: false,
+        payload: result.payload
+      });
+    }
   } catch (error) {
     res.send({
       status: false,
-      payload: "Unable to verify the OTP"
+      payload: "Unable to verify the OTP",
+      error: error
     });
   }
 });
