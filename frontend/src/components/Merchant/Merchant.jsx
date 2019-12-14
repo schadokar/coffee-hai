@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import "./merchant.css";
 import OrderForm from "../Forms/index";
 import axios from "axios";
@@ -9,29 +10,58 @@ class Merchant extends Component {
   constructor() {
     super();
     this.state = {
-      merchantID: "M108",
+      merchantID: "",
+      name: "",
+      token: "",
       orders: [],
       ordersTable: [],
       orderID: "",
       deliveryID: "",
       customerID: "C101",
-      orderStatus: "created"
+      orderStatus: "order_created",
+      redirect: false
     };
   }
 
-  message = () => {
-    console.log("message");
-  };
   componentDidMount = () => {
-    this.getOrderList();
+    // get the token from the local storage
+    const token = localStorage.getItem("merchantToken");
+
+    // check if user is logged in or not
+    if (token === null) {
+      // redirect to the dashboard
+      this.setState({
+        redirect: true
+      });
+    } else {
+      // 2nd parameter in the token is a payload
+      // it is a simple base64 encoded message
+      // we can extract the userID and name from it
+      const data = token.split(".")[1];
+
+      // create a buffer
+      let buff = new Buffer(data, "base64");
+      // convert the buffer to ascii and then to JSON object
+      let userObj = JSON.parse(buff.toString("ascii"));
+
+      // extract the name and userID from user in the userObj
+      const { name, userID } = userObj.user;
+
+      // set the state of token, name, and merchantID
+      this.setState({ token, name, merchantID: userID });
+
+      // set the axios default header to token
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // call the getOrderList
+      this.getOrderList();
+    }
   };
 
   getOrderList = async () => {
-    const { merchantID } = this.state;
-    const orders = await axios.get(
-      `${dbURL}/getOrdersByMerchant/${merchantID}`
-    );
+    const orders = await axios.get(`${dbURL}/getOrdersByMerchant`);
 
+    console.log(orders.data);
     this.setState(
       {
         orders: orders.data
@@ -82,18 +112,40 @@ class Merchant extends Component {
     }
   };
 
+  logout = () => {
+    // clear the token from the storage
+    localStorage.removeItem("merchantToken");
+
+    // redirect to the dashboard
+    this.setState({ redirect: true });
+  };
+
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to="/"></Redirect>;
+    }
+  };
+
   render() {
+    const { merchantID, name } = this.state;
+
     return (
       <div>
+        {this.renderRedirect()}
         <Menu secondary>
-          <Menu.Item>
+          <Menu.Item>{name}</Menu.Item>
+          <Menu.Item>{merchantID}</Menu.Item>
+          <Menu.Item position="right">
             <OrderForm
-              merchantID="M108"
+              merchantID={merchantID}
               customerID="C101"
               getOrderList={this.getOrderList}
             ></OrderForm>
-
-            {/* <Button primary>Create Order</Button> */}
+          </Menu.Item>
+          <Menu.Item>
+            <Button onClick={() => this.logout()} color="black">
+              Logout
+            </Button>
           </Menu.Item>
         </Menu>
         <Divider horizontal>Orders</Divider>

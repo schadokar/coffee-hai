@@ -1,4 +1,4 @@
 {
   "serverUrl": "http://localhost:4444/api/v1",
-  "dbURL": "http://localhost:8080"
+  "dbURL": "http://localhost:8202"
 }

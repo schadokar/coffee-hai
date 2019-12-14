@@ -56,13 +56,19 @@ class CustomerLogin extends Component {
   };
 
   verifyOTP = async () => {
+    const { otp, mobileno, name } = this.state;
+
     const result = await axios.post(`${serverUrl}/verifyotp`, {
-      otp: this.state.otp
+      otp,
+      mobileno,
+      name
     });
 
     console.log(result.data);
 
     if (result.data.status) {
+      localStorage.setItem("customerToken", result.data.token);
+
       this.setState({
         redirect: true
       });

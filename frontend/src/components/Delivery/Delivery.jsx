@@ -1,26 +1,61 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import "./delivery.css";
-
 import axios from "axios";
-import { Button, Divider, Grid, Table } from "semantic-ui-react";
+import { Button, Divider, Grid, Menu, Table } from "semantic-ui-react";
 import { dbURL } from "../../config.json";
 
 class Delivery extends Component {
   constructor() {
     super();
     this.state = {
-      deliveryID: "D102",
+      deliveryID: "",
+      name: "",
+      token: "",
       ordersByDelivery: [],
       readyOrders: [],
       ordersTable: [],
       readyTable: [],
-      orderID: ""
+      orderID: "",
+      redirect: false
     };
   }
 
   componentDidMount = () => {
-    this.getOrderList();
-    this.getReadyOrders();
+    // get the token from the local storage
+    const token = localStorage.getItem("deliveryToken");
+
+    // check if user is logged in or not
+    if (token === null) {
+      // redirect to the dashboard
+      this.setState({
+        redirect: true
+      });
+    } else {
+      // 2nd parameter in the token is a payload
+      // it is a simple base64 encoded message
+      // we can extract the userID and name from it
+      const data = token.split(".")[1];
+
+      // create a buffer
+      let buff = new Buffer(data, "base64");
+      // convert the buffer to ascii and then to JSON object
+      let userObj = JSON.parse(buff.toString("ascii"));
+
+      // extract the name and userID from user in the userObj
+      const { name, userID } = userObj.user;
+
+      // set the state of token, name, and deliveryID
+      this.setState({ token, name, deliveryID: userID });
+
+      // set the axios default header to token
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // call the getOrderList
+      this.getOrderList();
+
+      this.getReadyOrders();
+    }
   };
 
   getOrderList = async () => {
@@ -148,9 +183,37 @@ class Delivery extends Component {
     }
   };
 
+  logout = () => {
+    // clear the token from the storage
+    localStorage.removeItem("deliveryToken");
+
+    // redirect to the dashboard
+    this.setState({ redirect: true });
+  };
+
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to="/"></Redirect>;
+    }
+  };
+
   render() {
+    const { deliveryID, name } = this.state;
+
     return (
       <div>
+        {this.renderRedirect()}
+
+        <Menu secondary>
+          <Menu.Item>{name}</Menu.Item>
+          <Menu.Item>{deliveryID}</Menu.Item>
+          <Menu.Item position="right">
+            <Button onClick={() => this.logout()} color="black">
+              Logout
+            </Button>
+          </Menu.Item>
+        </Menu>
+
         <Divider horizontal>Orders</Divider>
         <div className="delivery-table">
           <Grid columns={2} divided>

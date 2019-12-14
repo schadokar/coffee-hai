@@ -7,8 +7,6 @@ class ModalModalExample extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      merchantID: this.props.merchantID,
-      customerID: this.props.customerID,
       orderStatus: "order_created",
       orderID: "",
       open: false,
@@ -40,7 +38,7 @@ class ModalModalExample extends Component {
   };
 
   createOrder = async () => {
-    const { orderID, merchantID, customerID, orderStatus } = this.state;
+    const { orderID, orderStatus } = this.state;
 
     this.setState({
       loading: true
@@ -48,8 +46,8 @@ class ModalModalExample extends Component {
 
     const res = await axios.post(`${dbURL}/createOrder`, {
       orderID: orderID,
-      merchantID: merchantID,
-      customerID: customerID,
+      merchantID: this.props.merchantID,
+      customerID: this.props.customerID,
       deliveryID: null,
       orderStatus: orderStatus
     });
@@ -59,14 +57,7 @@ class ModalModalExample extends Component {
   };
 
   render() {
-    const {
-      orderID,
-      merchantID,
-      customerID,
-      orderStatus,
-      open,
-      loading
-    } = this.state;
+    const { orderID, orderStatus, open, loading } = this.state;
 
     return (
       <Modal
@@ -87,12 +78,12 @@ class ModalModalExample extends Component {
               </Form.Field>
               <Form.Field>
                 <label>Merchant ID</label>
-                <Input placeholder={merchantID} readOnly></Input>
+                <Input placeholder={this.props.merchantID} readOnly></Input>
               </Form.Field>
 
               <Form.Field>
                 <label>Customer ID</label>
-                <Input placeholder={customerID} readOnly></Input>
+                <Input placeholder={this.props.customerID} readOnly></Input>
               </Form.Field>
               <Form.Field>
                 <label>Order Status</label>
