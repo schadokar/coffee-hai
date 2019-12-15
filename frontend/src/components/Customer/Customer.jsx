@@ -9,7 +9,7 @@ class Customer extends Component {
   constructor() {
     super();
     this.state = {
-      customerID: "C101",
+      customerID: "",
       name: "",
       token: "",
       orders: [],
@@ -54,11 +54,7 @@ class Customer extends Component {
   };
 
   getOrderList = async () => {
-    const { customerID } = this.state;
-
-    const orders = await axios.get(
-      `${dbURL}/getOrdersByCustomer/${customerID}`
-    );
+    const orders = await axios.get(`${dbURL}/getOrdersByCustomer`);
 
     this.setState(
       {

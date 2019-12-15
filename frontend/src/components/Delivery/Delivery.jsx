@@ -59,11 +59,7 @@ class Delivery extends Component {
   };
 
   getOrderList = async () => {
-    const { deliveryID } = this.state;
-
-    const orders = await axios.get(
-      `${dbURL}/getOrdersByDelivery/${deliveryID}`
-    );
+    const orders = await axios.get(`${dbURL}/getOrdersByDelivery`);
 
     this.setState(
       {
