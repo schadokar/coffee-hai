@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { Button, Form, Input } from "semantic-ui-react";
 import axios from "axios";
-import { serverUrl } from "../../config.json";
+import { serverUrl, dbURL } from "../../config.json";
 
 class DeliveryLogin extends Component {
   constructor() {
@@ -67,8 +67,18 @@ class DeliveryLogin extends Component {
     console.log(result.data);
 
     if (result.data.status) {
+      // save jwt token in the local storage of the browser
       localStorage.setItem("deliveryToken", result.data.token);
 
+      // save user in the db if not exist
+      const dbres = await axios.post(`${dbURL}/signInDelivery`, {
+        userID: mobileno,
+        name: name
+      });
+
+      console.log(dbres.data);
+
+      // redirect to the delivery page
       this.setState({
         redirect: true
       });

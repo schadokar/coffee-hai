@@ -76,7 +76,7 @@ class MerchantLogin extends Component {
         name: name
       });
 
-      console.log("db rsponse", dbres);
+      console.log(dbres.data);
 
       // redirect to merchant page
       this.setState({
