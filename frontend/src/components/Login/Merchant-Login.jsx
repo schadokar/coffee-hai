@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { Button, Form, Input } from "semantic-ui-react";
 import axios from "axios";
-import { serverUrl } from "../../config.json";
+import { serverUrl, dbURL } from "../../config.json";
 
 class MerchantLogin extends Component {
   constructor() {
@@ -67,8 +67,18 @@ class MerchantLogin extends Component {
     console.log(result.data);
 
     if (result.data.status) {
+      // save jwt token in the local storage of the browser
       localStorage.setItem("merchantToken", result.data.token);
 
+      // save user in the db if not exist
+      const dbres = await axios.post(`${dbURL}/signInMerchant`, {
+        userID: mobileno,
+        name: name
+      });
+
+      console.log("db rsponse", dbres);
+
+      // redirect to merchant page
       this.setState({
         redirect: true
       });
