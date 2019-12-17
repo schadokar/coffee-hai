@@ -9,12 +9,19 @@ router.post("/sendotp", async (req, res) => {
 
   try {
     // call api to get the OTP
-    const result = await otpMethod.sendOTP(mobileno, "local-redis");
+    const result = await otpMethod.sendOTP(mobileno, "twilio");
 
-    res.send({
-      status: true,
-      payload: result.payload
-    });
+    if (result.status) {
+      res.send({
+        status: true,
+        payload: result.payload
+      });
+    } else {
+      res.send({
+        status: false,
+        payload: result.payload
+      });
+    }
   } catch (error) {
     res.send({
       status: false,
@@ -29,7 +36,7 @@ router.post("/verifyotp", async (req, res) => {
 
   try {
     // call api to verify otp
-    const result = await otpMethod.verifyOTP(mobileno, otp, "local-redis");
+    const result = await otpMethod.verifyOTP(mobileno, otp, "twilio");
 
     if (result.status) {
       const user = { userID: mobileno, name };
