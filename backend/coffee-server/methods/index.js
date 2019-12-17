@@ -1,11 +1,13 @@
 const localRedis = require("./local-redis");
+const twilioOTP = require("./twilio");
 
 // send OTP according to the method
 const sendOTP = async (mobileno, method) => {
   switch (method) {
     case "local-redis":
-      return localRedis.redisSendOTP(mobileno);
-
+      return await localRedis.redisSendOTP(mobileno);
+    case "twilio":
+      return await twilioOTP.sendOTP(mobileno);
     default:
       return {
         status: false,
@@ -19,8 +21,9 @@ const sendOTP = async (mobileno, method) => {
 const verifyOTP = async (mobileno, otp, method) => {
   switch (method) {
     case "local-redis":
-      return localRedis.redisVerifyOTP(mobileno, otp);
-
+      return await localRedis.redisVerifyOTP(mobileno, otp);
+    case "twilio":
+      return await twilioOTP.verifyOTP(mobileno, otp);
     default:
       return {
         status: false,
