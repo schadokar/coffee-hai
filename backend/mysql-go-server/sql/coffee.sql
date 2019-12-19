@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS coffeedb.orders (
   merchantID VARCHAR(40),
   deliveryID VARCHAR(40), 
   customerID VARCHAR(40),
-  orderStatus ENUM  ("order_created","order_ready", "order_picked", "delivered", "cancelled") DEFAULT "order_created", 
+  orderStatus ENUM  ("order_placed","order_ready", "order_picked", "delivered", "cancelled") DEFAULT "order_placed", 
   PRIMARY KEY (orderID)
 );
 
