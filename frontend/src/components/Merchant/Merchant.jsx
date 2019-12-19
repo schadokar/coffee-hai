@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./merchant.css";
-import OrderForm from "../Forms/index";
+
 import axios from "axios";
 import { Menu, Button, Divider, Table } from "semantic-ui-react";
 import { dbURL } from "../../config.json";
@@ -18,7 +18,6 @@ class Merchant extends Component {
       orderID: "",
       deliveryID: "",
       customerID: "C101",
-      orderStatus: "order_created",
       redirect: false
     };
   }
@@ -135,14 +134,8 @@ class Merchant extends Component {
         <Menu secondary>
           <Menu.Item>{name}</Menu.Item>
           <Menu.Item>{merchantID}</Menu.Item>
+
           <Menu.Item position="right">
-            <OrderForm
-              merchantID={merchantID}
-              customerID="C101"
-              getOrderList={this.getOrderList}
-            ></OrderForm>
-          </Menu.Item>
-          <Menu.Item>
             <Button onClick={() => this.logout()} color="black">
               Logout
             </Button>
