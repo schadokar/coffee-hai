@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const otpMethod = require("../methods");
+const otpMethod = require("../otp-methods");
+const notificationMethod = require("../notification-methods");
 
 // Send OTP route
 router.post("/sendotp", async (req, res) => {
@@ -65,17 +66,36 @@ router.post("/verifyotp", async (req, res) => {
   }
 });
 
-// // Verify Token
+// Send notification
+router.post("/notification", async (req, res) => {
+  const { from, to, message } = req.body;
+  console.log(from, to, message);
+  try {
+    const result = await notificationMethod.sendNotification(
+      from,
+      to,
+      message,
+      "local-redis"
+    );
 
-// function verifyToken(req, res, next) {
-//   // Get the auth header value
-//   const bearerHeader = req.headers["authorization"];
-//   // Check if bearer is undefined
-//   if (typeof bearerHeader !== "undefined") {
-//   } else {
-//     // Forbidden
-//     res.sendStatus(403);
-//   }
-// }
+    if (result.status) {
+      res.json({
+        status: true,
+        payload: result.payload
+      });
+    } else {
+      res.json({
+        status: false,
+        payload: result.payload
+      });
+    }
+  } catch (error) {
+    res.send({
+      status: false,
+      payload: "Failed to send notification!",
+      error: error
+    });
+  }
+});
 
 module.exports = router;
