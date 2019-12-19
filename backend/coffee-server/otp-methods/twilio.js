@@ -4,11 +4,16 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const serviceName = process.env.TWILIO_COFFEE_SERVICE;
 
 // create client
-const client = require("twilio")(accountSid, authToken);
+const createClient = () => {
+  const client = require("twilio")(accountSid, authToken);
+  return client;
+};
 
 // send otp using the twilio service
 const sendOTP = async mobileno => {
   try {
+    const client = createClient();
+
     return new Promise((resolve, reject) => {
       client.verify
         .services(serviceName)
@@ -46,6 +51,8 @@ const sendOTP = async mobileno => {
 // verify the otp using the twilio service
 const verifyOTP = async (mobileno, otp) => {
   try {
+    const client = createClient();
+
     return new Promise((resolve, reject) => {
       client.verify
         .services(serviceName)
