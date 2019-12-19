@@ -6,11 +6,11 @@ const notificationMethod = require("../notification-methods");
 
 // Send OTP route
 router.post("/sendotp", async (req, res) => {
-  const { mobileno } = req.body;
+  const { mobileno, method } = req.body;
 
   try {
     // call api to get the OTP
-    const result = await otpMethod.sendOTP(mobileno, "twilio");
+    const result = await otpMethod.sendOTP(mobileno, method);
 
     if (result.status) {
       res.send({
@@ -33,11 +33,11 @@ router.post("/sendotp", async (req, res) => {
 
 // Verify OTP
 router.post("/verifyotp", async (req, res) => {
-  const { otp, mobileno, name } = req.body;
+  const { otp, mobileno, name, method } = req.body;
 
   try {
     // call api to verify otp
-    const result = await otpMethod.verifyOTP(mobileno, otp, "twilio");
+    const result = await otpMethod.verifyOTP(mobileno, otp, method);
 
     if (result.status) {
       const user = { userID: mobileno, name };
@@ -68,14 +68,14 @@ router.post("/verifyotp", async (req, res) => {
 
 // Send notification
 router.post("/notification", async (req, res) => {
-  const { from, to, message } = req.body;
+  const { from, to, message, method } = req.body;
   console.log(from, to, message);
   try {
     const result = await notificationMethod.sendNotification(
       from,
       to,
       message,
-      "local-redis"
+      method
     );
 
     if (result.status) {
