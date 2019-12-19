@@ -360,7 +360,7 @@ func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// prepare query
-	stmt, err := db.Prepare("UPDATE ORDERS SET orderStatus = ? WHERE orderID = ?")
+	stmt, err := db.Prepare("UPDATE orders SET orderStatus = ? WHERE orderID = ?")
 
 	// close the stmt request
 	defer stmt.Close()
@@ -399,7 +399,7 @@ func OrderPicked(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// prepare query
-	stmt, err := db.Prepare("UPDATE ORDERS SET deliveryID = ?, orderStatus = ? WHERE orderID = ?")
+	stmt, err := db.Prepare("UPDATE orders SET deliveryID = ?, orderStatus = ? WHERE orderID = ?")
 
 	checkErr(err)
 
