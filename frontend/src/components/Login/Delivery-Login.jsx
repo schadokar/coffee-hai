@@ -12,7 +12,8 @@ class DeliveryLogin extends Component {
       mobileno: "",
       otpStatus: false,
       otp: "",
-      redirect: false
+      redirect: false,
+      method: ""
     };
   }
 
@@ -44,24 +45,28 @@ class DeliveryLogin extends Component {
   };
 
   sendOTP = async () => {
+    const { mobileno, method } = this.state;
+
     this.setState({
       otpStatus: true
     });
 
     const result = await axios.post(`${serverUrl}/sendotp`, {
-      mobileno: this.state.mobileno
+      mobileno: mobileno,
+      method: method
     });
 
     console.log(result.data);
   };
 
   verifyOTP = async () => {
-    const { otp, mobileno, name } = this.state;
+    const { otp, mobileno, name, method } = this.state;
 
     const result = await axios.post(`${serverUrl}/verifyotp`, {
       otp,
       mobileno,
-      name
+      name,
+      method
     });
 
     console.log(result.data);
@@ -85,18 +90,49 @@ class DeliveryLogin extends Component {
     }
   };
 
+  // Toggle button action from send otp to signin
   buttonAction = () => {
     if (this.state.otpStatus) {
       return (
-        <Button primary onClick={this.verifyOTP}>
-          Sign In
-        </Button>
+        <div>
+          <Button
+            primary
+            onClick={() => {
+              this.setState({ method: "local-redis" }, () => this.verifyOTP());
+            }}
+          >
+            Redis Sign In
+          </Button>
+          <Button
+            secondary
+            onClick={() => {
+              this.setState({ method: "twilio" }, () => this.verifyOTP());
+            }}
+          >
+            Twilio Sign In
+          </Button>
+        </div>
       );
     } else {
       return (
-        <Button primary onClick={this.sendOTP}>
-          Send OTP
-        </Button>
+        <div>
+          <Button
+            primary
+            onClick={() => {
+              this.setState({ method: "local-redis" }, () => this.sendOTP());
+            }}
+          >
+            Redis Send OTP
+          </Button>
+          <Button
+            secondary
+            onClick={() => {
+              this.setState({ method: "twilio" }, () => this.sendOTP());
+            }}
+          >
+            Twilio Send OTP
+          </Button>
+        </div>
       );
     }
   };

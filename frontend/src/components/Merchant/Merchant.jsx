@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./merchant.css";
-import OrderForm from "../Forms/index";
+
 import axios from "axios";
 import { Menu, Button, Divider, Table } from "semantic-ui-react";
-import { dbURL } from "../../config.json";
+import { dbURL, serverUrl } from "../../config.json";
 
 class Merchant extends Component {
   constructor() {
@@ -15,10 +15,6 @@ class Merchant extends Component {
       token: "",
       orders: [],
       ordersTable: [],
-      orderID: "",
-      deliveryID: "",
-      customerID: "C101",
-      orderStatus: "order_created",
       redirect: false
     };
   }
@@ -72,10 +68,26 @@ class Merchant extends Component {
     );
   };
 
-  changeOrderStatus = async orderID => {
+  changeOrderStatus = async (orderID, customerID) => {
+    // update the status of the order to order_ready
     const res = await axios.put(
       `${dbURL}/updateOrderStatus/${orderID}/order_ready`
     );
+
+    // if order status successfully updated
+    // then send notification to merchant and customer
+    if (res.status) {
+      const notificationStatus = await axios.post(
+        `${serverUrl}/sendnotification`,
+        {
+          merchantID: this.state.merchantID,
+          customerID: customerID,
+          message: `Order ${orderID} is ready to deliver!`
+        }
+      );
+
+      console.log(notificationStatus.status);
+    }
 
     console.log(res);
 
@@ -97,7 +109,9 @@ class Merchant extends Component {
             <Table.Cell>
               <Button
                 color="green"
-                onClick={() => this.changeOrderStatus(order.orderID)}
+                onClick={() =>
+                  this.changeOrderStatus(order.orderID, order.customerID)
+                }
               >
                 Order Ready
               </Button>
@@ -135,14 +149,8 @@ class Merchant extends Component {
         <Menu secondary>
           <Menu.Item>{name}</Menu.Item>
           <Menu.Item>{merchantID}</Menu.Item>
+
           <Menu.Item position="right">
-            <OrderForm
-              merchantID={merchantID}
-              customerID="C101"
-              getOrderList={this.getOrderList}
-            ></OrderForm>
-          </Menu.Item>
-          <Menu.Item>
             <Button onClick={() => this.logout()} color="black">
               Logout
             </Button>

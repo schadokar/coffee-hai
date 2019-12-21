@@ -7,7 +7,7 @@ class ModalModalExample extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      orderStatus: "order_created",
+      orderStatus: "order_placed",
       orderID: "",
       open: false,
       loading: false
@@ -21,6 +21,7 @@ class ModalModalExample extends Component {
     this.toggleModal();
   };
 
+  // Open or close the modal(pop-up) form
   toggleModal = () => {
     if (this.state.open) {
       this.setState({
@@ -34,6 +35,8 @@ class ModalModalExample extends Component {
       });
     }
 
+    // call getOrderList in the parent to refresh the
+    // order list
     this.props.getOrderList();
   };
 

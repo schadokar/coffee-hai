@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./customer.css";
 import axios from "axios";
+import OrderForm from "../Forms/index";
 import { Menu, Button, Divider, Table } from "semantic-ui-react";
 import { dbURL } from "../../config.json";
 
@@ -10,11 +11,13 @@ class Customer extends Component {
     super();
     this.state = {
       customerID: "",
+      merchantID: "+918649904058",
       name: "",
       token: "",
       orders: [],
       ordersTable: [],
-      redirect: false
+      redirect: false,
+      orderStatus: "order_placed"
     };
   }
 
@@ -121,7 +124,7 @@ class Customer extends Component {
   };
 
   render() {
-    const { customerID, name } = this.state;
+    const { customerID, merchantID, name } = this.state;
 
     return (
       <div>
@@ -130,8 +133,14 @@ class Customer extends Component {
         <Menu secondary>
           <Menu.Item>{name}</Menu.Item>
           <Menu.Item>{customerID}</Menu.Item>
-
           <Menu.Item position="right">
+            <OrderForm
+              merchantID={merchantID}
+              customerID={customerID}
+              getOrderList={this.getOrderList}
+            ></OrderForm>
+          </Menu.Item>
+          <Menu.Item>
             <Button onClick={() => this.logout()} color="black">
               Logout
             </Button>
