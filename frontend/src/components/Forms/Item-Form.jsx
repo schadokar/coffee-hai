@@ -3,20 +3,26 @@ import axios from "axios";
 import { dbURL } from "../../config.json";
 import { Button, Input, Modal, Form } from "semantic-ui-react";
 
-class CreateOrder extends Component {
+class ItemForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      orderStatus: "order_placed",
-      orderID: "",
+      itemID: "",
+      name: "",
       open: false,
       loading: false
     };
   }
 
-  generateOrderID = () => {
+  onChange = event => {
     this.setState({
-      orderID: `O${Math.floor(Math.random() * 10000)}`
+      [event.target.name]: event.target.value
+    });
+  };
+
+  generateItemID = () => {
+    this.setState({
+      itemID: `I${Math.floor(Math.random() * 10000)}`
     });
     this.toggleModal();
   };
@@ -36,19 +42,16 @@ class CreateOrder extends Component {
     }
   };
 
-  createOrder = async () => {
-    const { orderID, orderStatus } = this.state;
+  createItem = async () => {
+    const { itemID, name } = this.state;
 
     this.setState({
       loading: true
     });
 
-    const res = await axios.post(`${dbURL}/createOrder`, {
-      orderID: orderID,
-      merchantID: this.props.merchantID,
-      customerID: this.props.customerID,
-      deliveryID: null,
-      orderStatus: orderStatus
+    const res = await axios.post(`${dbURL}/createItem`, {
+      itemID: itemID,
+      name: name
     });
     console.log(res);
 
@@ -56,30 +59,29 @@ class CreateOrder extends Component {
       // call getOrderList in the parent to refresh the
       // order list
       this.props.getOrderList();
-      this.props.sendNotification(orderID);
     }
     this.toggleModal();
   };
 
   render() {
-    const { orderID, orderStatus, open, loading } = this.state;
+    const { itemID, open, loading } = this.state;
 
     return (
       <Modal
         open={open}
         trigger={
-          <Button color="linkedin" onClick={() => this.generateOrderID()}>
-            Create Order
+          <Button color="linkedin" onClick={() => this.generateItemID()}>
+            Create Item
           </Button>
         }
       >
-        <Modal.Header>Create Order</Modal.Header>
+        <Modal.Header>Create Item</Modal.Header>
         <Modal.Content>
           <Modal.Description>
             <Form>
               <Form.Field>
-                <label>Order ID</label>
-                <Input placeholder={orderID} readOnly></Input>
+                <label>Item ID</label>
+                <Input placeholder={itemID} readOnly></Input>
               </Form.Field>
               <Form.Field>
                 <label>Merchant ID</label>
@@ -87,18 +89,20 @@ class CreateOrder extends Component {
               </Form.Field>
 
               <Form.Field>
-                <label>Customer ID</label>
-                <Input placeholder={this.props.customerID} readOnly></Input>
+                <label>Name</label>
+                <Input
+                  onChange={this.onChange}
+                  placeholder="Item Name"
+                  name="name"
+                  value={this.state.name}
+                ></Input>
               </Form.Field>
-              <Form.Field>
-                <label>Order Status</label>
-                <Input placeholder={orderStatus} readOnly></Input>
-              </Form.Field>
+
               <Button
                 loading={loading}
                 primary
                 onClick={() => {
-                  this.createOrder();
+                  this.createItem();
                 }}
               >
                 Create
@@ -119,4 +123,4 @@ class CreateOrder extends Component {
   }
 }
 
-export default CreateOrder;
+export default ItemForm;

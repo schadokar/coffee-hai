@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./merchant.css";
-
 import axios from "axios";
 import { Menu, Button, Divider, Table } from "semantic-ui-react";
+
+import { ItemForm } from "../Forms/index.js";
 import { dbURL, serverUrl } from "../../config.json";
 
 class Merchant extends Component {
@@ -63,7 +64,6 @@ class Merchant extends Component {
   getOrderList = async () => {
     const orders = await axios.get(`${dbURL}/getOrdersByMerchant`);
 
-    console.log(orders.data);
     this.setState(
       {
         orders: orders.data
@@ -163,6 +163,12 @@ class Merchant extends Component {
           <Menu.Item>{merchantID}</Menu.Item>
 
           <Menu.Item position="right">
+            <ItemForm
+              merchantID={merchantID}
+              getOrderList={this.getOrderList}
+            ></ItemForm>
+          </Menu.Item>
+          <Menu.Item>
             <Button onClick={() => this.logout()} color="black">
               Logout
             </Button>

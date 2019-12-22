@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./customer.css";
 import axios from "axios";
-import OrderForm from "../Forms/index";
+import { OrderForm } from "../Forms/index";
 import { Menu, Button, Divider, Table } from "semantic-ui-react";
 import { dbURL, serverUrl } from "../../config.json";
 
