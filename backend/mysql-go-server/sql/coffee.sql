@@ -12,7 +12,7 @@ USE coffeedb;
 DROP TABLE IF EXISTS coffeedb.orders;
 
 CREATE TABLE IF NOT EXISTS coffeedb.orders (
-  orderID VARCHAR(40),
+  orderID VARCHAR(40) NOT NULL,
   merchantID VARCHAR(40),
   deliveryID VARCHAR(40), 
   customerID VARCHAR(40),
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS coffeedb.orders (
 DROP TABLE IF EXISTS coffeedb.merchant;
 
 CREATE TABLE IF NOT EXISTS coffeedb.merchant (
-  userID VARCHAR(40),
+  userID VARCHAR(40) NOT NULL,
   name VARCHAR(40),
   PRIMARY KEY (userID)
 );
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS coffeedb.merchant (
 DROP TABLE IF EXISTS coffeedb.delivery;
 
 CREATE TABLE IF NOT EXISTS coffeedb.delivery (
-  userID VARCHAR(40),
+  userID VARCHAR(40) NOT NULL,
   name VARCHAR(40),
   PRIMARY KEY (userID)
 );
@@ -45,7 +45,19 @@ CREATE TABLE IF NOT EXISTS coffeedb.delivery (
 DROP TABLE IF EXISTS coffeedb.customer;
 
 CREATE TABLE IF NOT EXISTS coffeedb.customer (
-  userID VARCHAR(40),
+  userID VARCHAR(40) NOT NULL ,
   name VARCHAR(40),
   PRIMARY KEY (userID)
+);
+
+/* --------------------------------Items Table------------------------------------------ */
+/* Drop items table and create a new one */
+DROP TABLE IF EXISTS coffeedb.items;
+
+CREATE TABLE IF NOT EXISTS coffeedb.items (
+  itemID VARCHAR(40) NOT NULL,
+  merchantID VARCHAR(40),
+  name VARCHAR(40),
+  PRIMARY KEY(itemID),
+  FOREIGN KEY (merchantID) REFERENCES coffeedb.merchant(userID)
 );

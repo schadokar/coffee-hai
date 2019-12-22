@@ -16,7 +16,6 @@ services:
     container_name: mysqldb
     networks:
       - mysql_server
-
   mysql_server_service:
     image: mysql-go-server
     ports:

@@ -20,7 +20,17 @@ func Router() *mux.Router {
 
 	router.HandleFunc("/signInCustomer", middleware.SignInCustomer).Methods("POST")
 
-	// ------------------------------ Order routes ---------------------------------------------
+	// ------------------------------ Items routes ---------------------------------------------
+
+	router.HandleFunc("/createItem", middleware.CreateItem).Methods("POST")
+
+	router.HandleFunc("/getAllItems", middleware.GetAllItems).Methods("GET")
+
+	router.HandleFunc("/getItem/{itemID}", middleware.GetItem).Methods("GET")
+
+	router.HandleFunc("/getItemsByMerchant", middleware.GetItemsByMerchant).Methods("GET")
+
+	// ------------------------------ Orders routes ---------------------------------------------
 
 	router.HandleFunc("/createOrder", middleware.CreateOrder).Methods("POST")
 
