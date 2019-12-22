@@ -17,6 +17,13 @@ class CustomerLogin extends Component {
     };
   }
 
+  componentDidMount = () => {
+    // set the otp method
+    this.setState({
+      method: process.env.REACT_APP_METHOD
+    });
+  };
+
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
@@ -93,45 +100,15 @@ class CustomerLogin extends Component {
   buttonAction = () => {
     if (this.state.otpStatus) {
       return (
-        <div>
-          <Button
-            primary
-            onClick={() => {
-              this.setState({ method: "local-redis" }, () => this.verifyOTP());
-            }}
-          >
-            Redis Sign In
-          </Button>
-          <Button
-            secondary
-            onClick={() => {
-              this.setState({ method: "twilio" }, () => this.verifyOTP());
-            }}
-          >
-            Twilio Sign In
-          </Button>
-        </div>
+        <Button primary onClick={() => this.verifyOTP()}>
+          Sign In
+        </Button>
       );
     } else {
       return (
-        <div>
-          <Button
-            primary
-            onClick={() => {
-              this.setState({ method: "local-redis" }, () => this.sendOTP());
-            }}
-          >
-            Redis Send OTP
-          </Button>
-          <Button
-            secondary
-            onClick={() => {
-              this.setState({ method: "twilio" }, () => this.sendOTP());
-            }}
-          >
-            Twilio Send OTP
-          </Button>
-        </div>
+        <Button primary onClick={() => this.sendOTP()}>
+          Send OTP
+        </Button>
       );
     }
   };

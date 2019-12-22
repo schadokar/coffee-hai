@@ -1,10 +1,10 @@
 const localRedis = require("./local-redis");
 
 // send notification according to the method
-const sendNotification = async (from, to, message, method) => {
+const sendNotification = async (orderID, method, bearerToken) => {
   switch (method) {
     case "local-redis":
-      return await localRedis.sendNotification(from, to, message);
+      return await localRedis.sendNotification(orderID, bearerToken);
     default:
       return {
         status: false,

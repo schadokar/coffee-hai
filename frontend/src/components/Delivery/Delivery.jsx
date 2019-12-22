@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import "./delivery.css";
 import axios from "axios";
 import { Button, Divider, Grid, Menu, Table } from "semantic-ui-react";
-import { dbURL } from "../../config.json";
+import { dbURL, serverUrl } from "../../config.json";
 
 class Delivery extends Component {
   constructor() {
@@ -17,7 +17,8 @@ class Delivery extends Component {
       ordersTable: [],
       readyTable: [],
       orderID: "",
-      redirect: false
+      redirect: false,
+      method: ""
     };
   }
 
@@ -56,6 +57,9 @@ class Delivery extends Component {
 
       this.getReadyOrders();
     }
+
+    // set the notification method
+    this.setState({ method: process.env.REACT_APP_METHOD });
   };
 
   getOrderList = async () => {
@@ -102,21 +106,40 @@ class Delivery extends Component {
 
     console.log(res);
 
+    if (res.status) {
+      this.sendNotification(orderID);
+    }
+
     this.getOrderList();
     this.getReadyOrders();
   };
 
   orderPicked = async orderID => {
-    const { deliveryID } = this.state;
-
-    const res = await axios.put(
-      `${dbURL}/orderPicked/${orderID}/${deliveryID}`
-    );
+    const res = await axios.put(`${dbURL}/orderPicked/${orderID}`);
 
     console.log(res);
 
+    if (res.status) {
+      this.sendNotification(orderID);
+    }
+
     this.getOrderList();
     this.getReadyOrders();
+  };
+
+  sendNotification = async orderID => {
+    const { method } = this.state;
+
+    // send notification to merchant and customer
+    const notificationStatus = await axios.post(
+      `${serverUrl}/sendnotification`,
+      {
+        orderID,
+        method
+      }
+    );
+
+    console.log("notification status: ", notificationStatus);
   };
 
   createOrderTable = () => {

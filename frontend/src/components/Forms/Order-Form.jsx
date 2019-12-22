@@ -34,10 +34,6 @@ class ModalModalExample extends Component {
         loading: false
       });
     }
-
-    // call getOrderList in the parent to refresh the
-    // order list
-    this.props.getOrderList();
   };
 
   createOrder = async () => {
@@ -56,6 +52,12 @@ class ModalModalExample extends Component {
     });
     console.log(res);
 
+    if (res.status) {
+      // call getOrderList in the parent to refresh the
+      // order list
+      this.props.getOrderList();
+      this.props.sendNotification(orderID);
+    }
     this.toggleModal();
   };
 

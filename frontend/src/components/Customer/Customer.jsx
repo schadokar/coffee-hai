@@ -4,7 +4,7 @@ import "./customer.css";
 import axios from "axios";
 import OrderForm from "../Forms/index";
 import { Menu, Button, Divider, Table } from "semantic-ui-react";
-import { dbURL } from "../../config.json";
+import { dbURL, serverUrl } from "../../config.json";
 
 class Customer extends Component {
   constructor() {
@@ -17,7 +17,8 @@ class Customer extends Component {
       orders: [],
       ordersTable: [],
       redirect: false,
-      orderStatus: "order_placed"
+      orderStatus: "order_placed",
+      method: ""
     };
   }
 
@@ -54,6 +55,9 @@ class Customer extends Component {
       // call the getOrderList
       this.getOrderList();
     }
+
+    // set the notification method
+    this.setState({ method: process.env.REACT_APP_METHOD });
   };
 
   getOrderList = async () => {
@@ -70,13 +74,35 @@ class Customer extends Component {
   };
 
   changeOrderStatus = async orderID => {
+    // cancel the order
     const res = await axios.put(
       `${dbURL}/updateOrderStatus/${orderID}/cancelled`
     );
 
+    // if order status successfully updated
+    // then send notification to merchant and customer
+    if (res.status) {
+      this.sendNotification(orderID);
+    }
+
     console.log(res);
 
     this.getOrderList();
+  };
+
+  sendNotification = async orderID => {
+    const { method } = this.state;
+
+    // send notification to merchant and customer
+    const notificationStatus = await axios.post(
+      `${serverUrl}/sendnotification`,
+      {
+        orderID,
+        method
+      }
+    );
+
+    console.log("notification status: ", notificationStatus);
   };
 
   createOrderTable = () => {
@@ -138,6 +164,7 @@ class Customer extends Component {
               merchantID={merchantID}
               customerID={customerID}
               getOrderList={this.getOrderList}
+              sendNotification={this.sendNotification}
             ></OrderForm>
           </Menu.Item>
           <Menu.Item>

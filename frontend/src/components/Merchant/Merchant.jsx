@@ -15,10 +15,12 @@ class Merchant extends Component {
       token: "",
       orders: [],
       ordersTable: [],
-      redirect: false
+      redirect: false,
+      method: ""
     };
   }
 
+  // use jwt to extract the merchant details
   componentDidMount = () => {
     // get the token from the local storage
     const token = localStorage.getItem("merchantToken");
@@ -52,8 +54,12 @@ class Merchant extends Component {
       // call the getOrderList
       this.getOrderList();
     }
+
+    // set the notification method
+    this.setState({ method: process.env.REACT_APP_METHOD });
   };
 
+  // get orders for the merchant
   getOrderList = async () => {
     const orders = await axios.get(`${dbURL}/getOrdersByMerchant`);
 
@@ -68,7 +74,8 @@ class Merchant extends Component {
     );
   };
 
-  changeOrderStatus = async (orderID, customerID) => {
+  // change order status from order_placed to order_ready
+  changeOrderStatus = async orderID => {
     // update the status of the order to order_ready
     const res = await axios.put(
       `${dbURL}/updateOrderStatus/${orderID}/order_ready`
@@ -77,16 +84,7 @@ class Merchant extends Component {
     // if order status successfully updated
     // then send notification to merchant and customer
     if (res.status) {
-      const notificationStatus = await axios.post(
-        `${serverUrl}/sendnotification`,
-        {
-          merchantID: this.state.merchantID,
-          customerID: customerID,
-          message: `Order ${orderID} is ready to deliver!`
-        }
-      );
-
-      console.log(notificationStatus.status);
+      this.sendNotification(orderID);
     }
 
     console.log(res);
@@ -94,6 +92,22 @@ class Merchant extends Component {
     this.getOrderList();
   };
 
+  sendNotification = async orderID => {
+    const { method } = this.state;
+
+    // send notification to merchant and customer
+    const notificationStatus = await axios.post(
+      `${serverUrl}/sendnotification`,
+      {
+        orderID,
+        method
+      }
+    );
+
+    console.log("notification status: ", notificationStatus);
+  };
+
+  // create order table of the merchant
   createOrderTable = () => {
     const { orders } = this.state;
 
@@ -109,9 +123,7 @@ class Merchant extends Component {
             <Table.Cell>
               <Button
                 color="green"
-                onClick={() =>
-                  this.changeOrderStatus(order.orderID, order.customerID)
-                }
+                onClick={() => this.changeOrderStatus(order.orderID)}
               >
                 Order Ready
               </Button>

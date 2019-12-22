@@ -67,15 +67,15 @@ router.post("/verifyotp", async (req, res) => {
 });
 
 // Send notification
-router.post("/notification", async (req, res) => {
-  const { from, to, message, method } = req.body;
-  console.log(from, to, message);
+router.post("/sendnotification", async (req, res) => {
+  const { orderID, method } = req.body;
+  const bearerToken = req.headers["authorization"];
+
   try {
     const result = await notificationMethod.sendNotification(
-      from,
-      to,
-      message,
-      method
+      orderID,
+      method,
+      bearerToken
     );
 
     if (result.status) {
