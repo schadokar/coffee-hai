@@ -12,4 +12,4 @@ It is still in development phase.
 
 ## Author
 
-[Shubham Chadokar](https://schadokar.netlify.com)
+[Shubham Chadokar](https://schadokar.dev)

@@ -13,7 +13,8 @@ class CustomerLogin extends Component {
       otpStatus: false,
       otp: "",
       redirect: false,
-      method: ""
+      method: "",
+      actor: "Customer"
     };
   }
 
@@ -67,12 +68,13 @@ class CustomerLogin extends Component {
   };
 
   verifyOTP = async () => {
-    const { otp, mobileno, name, method } = this.state;
+    const { otp, mobileno, name, actor, method } = this.state;
 
     const result = await axios.post(`${serverUrl}/verifyotp`, {
       otp,
       mobileno,
       name,
+      actor,
       method
     });
 
@@ -81,14 +83,6 @@ class CustomerLogin extends Component {
     if (result.data.status) {
       // save jwt token in the local storage of the browser
       localStorage.setItem("customerToken", result.data.token);
-
-      // save user in the db if not exist
-      const dbres = await axios.post(`${dbURL}/signInCustomer`, {
-        userID: mobileno,
-        name: name
-      });
-
-      console.log(dbres.data);
 
       this.setState({
         redirect: true
