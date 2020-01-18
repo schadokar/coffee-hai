@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./merchant.css";
 import axios from "axios";
-import { Menu, Button, Segment, Table, Grid } from "semantic-ui-react";
+import { Menu, Button, Segment, Grid } from "semantic-ui-react";
 import { dbURL, serverUrl } from "../../config.json";
 // Form to create an item
 import { ItemForm } from "../Forms/index.js";
 // import Item table
 import { ItemsByMerchant } from "../Items/index";
+// import Orders Table
+import { Orders } from "../Orders/index";
 
 class Merchant extends Component {
   constructor() {
@@ -17,10 +19,10 @@ class Merchant extends Component {
       name: "",
       token: "",
       orders: [],
-      ordersTable: [],
       redirect: false,
       method: "",
-      activeItem: "items"
+      activeItem: "items",
+      orderStatus: "order_ready"
     };
   }
 
@@ -71,14 +73,9 @@ class Merchant extends Component {
     const orders = await axios.get(`${dbURL}/getOrdersByMerchant`);
     console.log(orders.data);
 
-    this.setState(
-      {
-        orders: orders.data
-      },
-      () => {
-        this.createOrderTable();
-      }
-    );
+    this.setState({
+      orders: orders.data
+    });
   };
 
   // change order status from order_placed to order_ready
@@ -114,38 +111,6 @@ class Merchant extends Component {
     console.log("notification status: ", notificationStatus);
   };
 
-  // create order table of the merchant
-  createOrderTable = () => {
-    const { orders } = this.state;
-
-    if (orders != null) {
-      const table = orders.map((order, index) => {
-        return (
-          <Table.Row key={index}>
-            <Table.Cell>{order.orderID}</Table.Cell>
-            <Table.Cell>{order.itemID}</Table.Cell>
-            <Table.Cell>{order.merchantID}</Table.Cell>
-            <Table.Cell>{order.deliveryID}</Table.Cell>
-            <Table.Cell>{order.customerID}</Table.Cell>
-            <Table.Cell>{order.orderStatus}</Table.Cell>
-            <Table.Cell>
-              <Button
-                color="green"
-                onClick={() => this.changeOrderStatus(order.orderID)}
-              >
-                Order Ready
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-        );
-      });
-
-      this.setState({
-        ordersTable: table
-      });
-    }
-  };
-
   logout = () => {
     // clear the token from the storage
     localStorage.removeItem("merchantToken");
@@ -165,22 +130,12 @@ class Merchant extends Component {
     switch (this.state.activeItem) {
       case "orders":
         return (
-          <Table color="brown">
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Order ID</Table.HeaderCell>
-                <Table.HeaderCell>Item ID</Table.HeaderCell>
-                <Table.HeaderCell>Merchant ID</Table.HeaderCell>
-                <Table.HeaderCell>Delivery ID</Table.HeaderCell>
-                <Table.HeaderCell>Customer ID</Table.HeaderCell>
-                <Table.HeaderCell>Order Status</Table.HeaderCell>
-                <Table.HeaderCell>Action</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>{this.state.ordersTable}</Table.Body>
-          </Table>
+          <Orders
+            orders={this.state.orders}
+            btnStatement={"Order Ready"}
+            changeOrderStatus={this.changeOrderStatus}
+          />
         );
-
       case "items":
         return <ItemsByMerchant />;
       default:

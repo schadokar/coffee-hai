@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./customer.css";
 import axios from "axios";
-import { Items } from "../Items/index";
-import { Menu, Button, Divider, Table, Grid, Segment } from "semantic-ui-react";
+import { Menu, Button, Divider, Grid, Segment } from "semantic-ui-react";
 import { dbURL, serverUrl } from "../../config.json";
+// import Item table
+import { Items } from "../Items/index";
+// import Orders Table
+import { Orders } from "../Orders/index";
 
 class Customer extends Component {
   constructor() {
@@ -14,7 +17,6 @@ class Customer extends Component {
       name: "",
       token: "",
       orders: [],
-      ordersTable: [],
       redirect: false,
       orderStatus: "order_placed",
       method: "",
@@ -66,14 +68,9 @@ class Customer extends Component {
   getOrderList = async () => {
     const orders = await axios.get(`${dbURL}/getOrdersByCustomer`);
 
-    this.setState(
-      {
-        orders: orders.data
-      },
-      () => {
-        this.createOrderTable();
-      }
-    );
+    this.setState({
+      orders: orders.data
+    });
   };
 
   changeOrderStatus = async orderID => {
@@ -108,37 +105,6 @@ class Customer extends Component {
     console.log("notification status: ", notificationStatus);
   };
 
-  createOrderTable = () => {
-    const { orders } = this.state;
-
-    if (orders != null) {
-      const table = orders.map((order, index) => {
-        return (
-          <Table.Row key={index}>
-            <Table.Cell>{order.orderID}</Table.Cell>
-            <Table.Cell>{order.itemID}</Table.Cell>
-            <Table.Cell>{order.merchantID}</Table.Cell>
-            <Table.Cell>{order.deliveryID}</Table.Cell>
-            <Table.Cell>{order.customerID}</Table.Cell>
-            <Table.Cell>{order.orderStatus}</Table.Cell>
-            <Table.Cell>
-              <Button
-                color="red"
-                onClick={() => this.changeOrderStatus(order.orderID)}
-              >
-                Cancel
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-        );
-      });
-
-      this.setState({
-        ordersTable: table
-      });
-    }
-  };
-
   logout = () => {
     // clear the token from the storage
     localStorage.removeItem("customerToken");
@@ -158,22 +124,13 @@ class Customer extends Component {
     switch (this.state.activeItem) {
       case "orders":
         return (
-          <Table color="brown">
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Order ID</Table.HeaderCell>
-                <Table.HeaderCell>Item ID</Table.HeaderCell>
-                <Table.HeaderCell>Merchant ID</Table.HeaderCell>
-                <Table.HeaderCell>Delivery ID</Table.HeaderCell>
-                <Table.HeaderCell>Customer ID</Table.HeaderCell>
-                <Table.HeaderCell>Order Status</Table.HeaderCell>
-                <Table.HeaderCell>Action</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>{this.state.ordersTable}</Table.Body>
-          </Table>
+          <Orders
+            orders={this.state.orders}
+            btnStatement={"Cancel"}
+            btnColor={"red"}
+            changeOrderStatus={this.changeOrderStatus}
+          />
         );
-
       case "items":
         return <Items customerID={this.state.customerID} />;
       default:
