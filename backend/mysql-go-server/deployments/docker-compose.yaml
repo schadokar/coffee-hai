@@ -20,6 +20,8 @@ services:
     image: mysql-go-server
     ports:
       - 8000:8000
+    volumes:
+      - ../.:/app
     environment:
       - DB_URL=mysqldb:3306
       - DB_USER=root

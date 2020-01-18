@@ -150,6 +150,7 @@ class Delivery extends Component {
         return (
           <Table.Row key={index}>
             <Table.Cell>{order.orderID}</Table.Cell>
+            <Table.Cell>{order.itemID}</Table.Cell>
             <Table.Cell>{order.merchantID}</Table.Cell>
             <Table.Cell>{order.deliveryID}</Table.Cell>
             <Table.Cell>{order.customerID}</Table.Cell>
@@ -241,6 +242,7 @@ class Delivery extends Component {
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell>Order ID</Table.HeaderCell>
+                    <Table.HeaderCell>Item ID</Table.HeaderCell>
                     <Table.HeaderCell>Merchant ID</Table.HeaderCell>
                     <Table.HeaderCell>Delivery ID</Table.HeaderCell>
                     <Table.HeaderCell>Customer ID</Table.HeaderCell>

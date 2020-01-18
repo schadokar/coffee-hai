@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { Button, Form, Input } from "semantic-ui-react";
 import axios from "axios";
-import { serverUrl, dbURL } from "../../config.json";
+import { serverUrl } from "../../config.json";
 
 class MerchantLogin extends Component {
   constructor() {

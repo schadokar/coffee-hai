@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import "./merchant.css";
 import axios from "axios";
-import { Menu, Button, Divider, Table } from "semantic-ui-react";
-
-import { ItemForm } from "../Forms/index.js";
+import { Menu, Button, Segment, Table, Grid } from "semantic-ui-react";
 import { dbURL, serverUrl } from "../../config.json";
+// Form to create an item
+import { ItemForm } from "../Forms/index.js";
+// import Item table
+import { ItemsByMerchant } from "../Items/index";
 
 class Merchant extends Component {
   constructor() {
@@ -17,9 +19,13 @@ class Merchant extends Component {
       orders: [],
       ordersTable: [],
       redirect: false,
-      method: ""
+      method: "",
+      activeItem: "items"
     };
   }
+
+  // handle Menu item click
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
   // use jwt to extract the merchant details
   componentDidMount = () => {
@@ -63,6 +69,7 @@ class Merchant extends Component {
   // get orders for the merchant
   getOrderList = async () => {
     const orders = await axios.get(`${dbURL}/getOrdersByMerchant`);
+    console.log(orders.data);
 
     this.setState(
       {
@@ -116,6 +123,7 @@ class Merchant extends Component {
         return (
           <Table.Row key={index}>
             <Table.Cell>{order.orderID}</Table.Cell>
+            <Table.Cell>{order.itemID}</Table.Cell>
             <Table.Cell>{order.merchantID}</Table.Cell>
             <Table.Cell>{order.deliveryID}</Table.Cell>
             <Table.Cell>{order.customerID}</Table.Cell>
@@ -152,8 +160,36 @@ class Merchant extends Component {
     }
   };
 
+  // return the table of orders or items w.r.t to selected option
+  selectedTab = () => {
+    switch (this.state.activeItem) {
+      case "orders":
+        return (
+          <Table color="brown">
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Order ID</Table.HeaderCell>
+                <Table.HeaderCell>Item ID</Table.HeaderCell>
+                <Table.HeaderCell>Merchant ID</Table.HeaderCell>
+                <Table.HeaderCell>Delivery ID</Table.HeaderCell>
+                <Table.HeaderCell>Customer ID</Table.HeaderCell>
+                <Table.HeaderCell>Order Status</Table.HeaderCell>
+                <Table.HeaderCell>Action</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>{this.state.ordersTable}</Table.Body>
+          </Table>
+        );
+
+      case "items":
+        return <ItemsByMerchant />;
+      default:
+        return <ItemsByMerchant />;
+    }
+  };
+
   render() {
-    const { merchantID, name } = this.state;
+    const { merchantID, name, activeItem } = this.state;
 
     return (
       <div>
@@ -174,22 +210,27 @@ class Merchant extends Component {
             </Button>
           </Menu.Item>
         </Menu>
-        <Divider horizontal>Orders</Divider>
-        <div className="merchant-table">
-          <Table color="brown">
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Order ID</Table.HeaderCell>
-                <Table.HeaderCell>Merchant ID</Table.HeaderCell>
-                <Table.HeaderCell>Delivery ID</Table.HeaderCell>
-                <Table.HeaderCell>Customer ID</Table.HeaderCell>
-                <Table.HeaderCell>Order Status</Table.HeaderCell>
-                <Table.HeaderCell>Action</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>{this.state.ordersTable}</Table.Body>
-          </Table>
-        </div>
+        {/* <Divider horizontal>Orders</Divider> */}
+
+        <Grid>
+          <Grid.Column width={3}>
+            <Menu fluid vertical tabular>
+              <Menu.Item
+                name="items"
+                active={activeItem === "items"}
+                onClick={this.handleItemClick}
+              />
+              <Menu.Item
+                name="orders"
+                active={activeItem === "orders"}
+                onClick={this.handleItemClick}
+              />
+            </Menu>
+          </Grid.Column>
+          <Grid.Column width={13}>
+            <Segment>{this.selectedTab()}</Segment>
+          </Grid.Column>
+        </Grid>
       </div>
     );
   }

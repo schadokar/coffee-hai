@@ -14,6 +14,7 @@ type order struct {
 	MerchantID  string `json:"merchantID"`
 	DeliveryID  string `json:"deliveryID"`
 	CustomerID  string `json:"customerID"`
+	ItemID      string `json:"itemID"`
 	OrderStatus string `json:"orderStatus"`
 }
 
@@ -43,8 +44,10 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	checkErr(err)
 
+	fmt.Println(params)
+
 	// insert into the orders db
-	stmt, err := db.Prepare("INSERT INTO orders SET orderID=?,merchantID=?,deliveryID=?, customerID=?, orderStatus=?")
+	stmt, err := db.Prepare("INSERT INTO orders SET orderID=?, merchantID=?, deliveryID=?, customerID=?, itemID=?, orderStatus=?")
 
 	// close the stmt request
 	defer stmt.Close()
@@ -52,7 +55,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	checkErr(err)
 
 	// execute the insert statement
-	res, err := stmt.Exec(params.OrderID, params.MerchantID, params.DeliveryID, params.CustomerID, params.OrderStatus)
+	res, err := stmt.Exec(params.OrderID, params.MerchantID, params.DeliveryID, params.CustomerID, params.ItemID, params.OrderStatus)
 
 	checkErr(err)
 
@@ -95,7 +98,7 @@ func GetAllOrders(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var params order
 
-		err = rows.Scan(&params.OrderID, &params.MerchantID, &params.DeliveryID, &params.CustomerID, &params.OrderStatus)
+		err = rows.Scan(&params.OrderID, &params.MerchantID, &params.DeliveryID, &params.CustomerID, &params.ItemID, &params.OrderStatus)
 
 		orders = append(orders, params)
 	}
@@ -135,7 +138,7 @@ func GetOrder(w http.ResponseWriter, r *http.Request) {
 
 	var order order
 
-	err = stmtOut.QueryRow(vars["orderID"]).Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.OrderStatus)
+	err = stmtOut.QueryRow(vars["orderID"]).Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.ItemID, &order.OrderStatus)
 
 	checkErr(err)
 
@@ -185,7 +188,7 @@ func GetOrdersByStatus(w http.ResponseWriter, r *http.Request) {
 
 		var order order
 
-		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.OrderStatus)
+		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.ItemID, &order.OrderStatus)
 
 		orders = append(orders, order)
 	}
@@ -233,7 +236,7 @@ func GetOrdersByMerchant(w http.ResponseWriter, r *http.Request) {
 
 		var order order
 
-		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.OrderStatus)
+		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.ItemID, &order.OrderStatus)
 
 		orders = append(orders, order)
 	}
@@ -281,7 +284,7 @@ func GetOrdersByDelivery(w http.ResponseWriter, r *http.Request) {
 
 		var order order
 
-		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.OrderStatus)
+		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.ItemID, &order.OrderStatus)
 
 		orders = append(orders, order)
 	}
@@ -329,7 +332,7 @@ func GetOrdersByCustomer(w http.ResponseWriter, r *http.Request) {
 
 		var order order
 
-		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.OrderStatus)
+		err = rows.Scan(&order.OrderID, &order.MerchantID, &order.DeliveryID, &order.CustomerID, &order.ItemID, &order.OrderStatus)
 
 		orders = append(orders, order)
 	}

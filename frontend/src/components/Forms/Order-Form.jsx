@@ -42,22 +42,29 @@ class CreateOrder extends Component {
     this.setState({
       loading: true
     });
-
+    console.log(
+      orderID,
+      this.props.merchantID,
+      this.props.customerID,
+      this.props.itemID,
+      orderStatus
+    );
     const res = await axios.post(`${dbURL}/createOrder`, {
       orderID: orderID,
       merchantID: this.props.merchantID,
       customerID: this.props.customerID,
       deliveryID: null,
+      itemID: this.props.itemID,
       orderStatus: orderStatus
     });
     console.log(res);
 
-    if (res.status) {
-      // call getOrderList in the parent to refresh the
-      // order list
-      this.props.getOrderList();
-      this.props.sendNotification(orderID);
-    }
+    // if (res.status) {
+    //   // call getOrderList in the parent to refresh the
+    //   // order list
+    //   this.props.getOrderList();
+    //   this.props.sendNotification(orderID);
+    // }
     this.toggleModal();
   };
 
@@ -69,11 +76,11 @@ class CreateOrder extends Component {
         open={open}
         trigger={
           <Button color="linkedin" onClick={() => this.generateOrderID()}>
-            Create Order
+            Buy Coffee
           </Button>
         }
       >
-        <Modal.Header>Create Order</Modal.Header>
+        <Modal.Header>Buy Coffee</Modal.Header>
         <Modal.Content>
           <Modal.Description>
             <Form>
