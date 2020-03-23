@@ -35,20 +35,23 @@ class Items extends Component {
   createItemsTable = () => {
     const { customerID } = this.props;
     console.log("This is customer id", customerID);
-    const itemsTable = this.state.items.map(item => (
-      <Table.Row key={item.itemID}>
-        <Table.Cell>{item.itemID}</Table.Cell>
-        <Table.Cell>{item.name}</Table.Cell>
-        <Table.Cell>{item.merchantID}</Table.Cell>
-        <Table.Cell>
-          <OrderForm
-            merchantID={item.merchantID}
-            customerID={customerID}
-            itemID={item.itemID}
-          ></OrderForm>
-        </Table.Cell>
-      </Table.Row>
-    ));
+    let itemsTable = [];
+    if (this.state.items) {
+      itemsTable = this.state.items.map(item => (
+        <Table.Row key={item.itemID}>
+          <Table.Cell>{item.itemID}</Table.Cell>
+          <Table.Cell>{item.name}</Table.Cell>
+          <Table.Cell>{item.merchantID}</Table.Cell>
+          <Table.Cell>
+            <OrderForm
+              merchantID={item.merchantID}
+              customerID={customerID}
+              itemID={item.itemID}
+            ></OrderForm>
+          </Table.Cell>
+        </Table.Row>
+      ));
+    }
 
     this.setState({
       itemsTable

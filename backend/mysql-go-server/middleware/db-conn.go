@@ -3,7 +3,6 @@ package middleware
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql" // import mysql package
@@ -17,7 +16,7 @@ func getDBConn() *sql.DB {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		fmt.Println("Error loading .env file")
 	}
 
 	dbEndpoint := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_URL"), os.Getenv("DB_NAME"))
