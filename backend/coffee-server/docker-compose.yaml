@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  coffee-server:
+    build:
+      context: .
+      dockerfile: ./deployments/Dockerfile
+    image: coffee-server
+    ports:
+      - 4444:4444
+    volumes:
+      - .:/app
+    container_name: coffee-server

@@ -26,6 +26,12 @@ const redisSendOTP = async mobileno => {
 
     return { status: false, payload: "Unable to send OTP!" };
   } catch (error) {
+    console.error({
+      status: false,
+      payload: "Error while sending the OTP",
+      error: error
+    });
+
     return {
       status: false,
       payload: "Error while sending the OTP",

@@ -1,0 +1,78 @@
+version: "2"
+
+networks:
+  coffeehai:
+    driver: "bridge"
+
+services:
+  coffee-server:
+    build:
+      context: .
+      dockerfile: ./coffee-server/deployments/Dockerfile
+    image: coffee-server
+    ports:
+      - 4444:4444
+    volumes:
+      - ./coffee-server/:/app
+    container_name: coffee-server
+    networks:
+      - coffeehai
+
+  redis-db:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    container_name: redis-db
+    networks:
+      - coffeehai
+
+  redis-go-server:
+    build:
+      context: .
+      dockerfile: ./redis-go-server/deployments/Dockerfile.dev
+    image: redis-go-server:latest
+
+    environment:
+      - REDIS_DB_URL=redis-db:6379
+      - REDIS_DB_PASSWORD=
+      - REDIS_DB=0
+    ports:
+      - 8080:8080
+    depends_on:
+      - redis-db
+    container_name: redis-go-server
+    networks:
+      - coffeehai
+
+  mysqldb_service:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=coffeedb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-go-server/sql:/docker-entrypoint-initdb.d
+    container_name: mysqldb
+    networks:
+      - coffeehai
+
+  mysql-go-server:
+    build:
+      context: .
+      dockerfile: ./mysql-go-server/deployments/Dockerfile.dev
+    image: mysql-go-server:latest
+    ports:
+      - 8000:8000
+    volumes:
+      - ./mysql-go-server/:/app
+    environment:
+      - DB_URL=mysqldb:3306
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=coffeedb
+    depends_on:
+      - mysqldb_service
+    container_name: mysql-go-server
+    networks:
+      - coffeehai

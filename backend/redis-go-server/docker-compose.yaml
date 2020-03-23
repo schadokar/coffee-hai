@@ -1,5 +1,8 @@
 version: "2"
 
+networks:
+  coffee-hai-network:
+
 services:
   redis-db:
     image: redis:alpine
@@ -8,7 +11,10 @@ services:
     container_name: redis-db
 
   redis-go-server:
-    image: schadokar/redis-go-server:latest
+    build:
+      context: .
+      dockerfile: ./deployments/Dockerfile.dev
+    image: redis-go-server:latest
 
     environment:
       - REDIS_DB_URL=redis-db:6379

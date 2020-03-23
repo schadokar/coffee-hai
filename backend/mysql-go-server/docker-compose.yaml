@@ -1,7 +1,7 @@
 version: "2"
 
 networks:
-  mysql_server:
+  coffee-hai-network:
 
 services:
   mysqldb_service:
@@ -12,16 +12,19 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ../sql:/docker-entrypoint-initdb.d
+      - ./sql:/docker-entrypoint-initdb.d
     container_name: mysqldb
     networks:
-      - mysql_server
-  mysql_server_service:
-    image: mysql-go-server
+      - coffee-hai-network
+  mysql-go-server:
+    build:
+      context: .
+      dockerfile: ./deployments/Dockerfile.dev
+    image: mysql-go-server:latest
     ports:
       - 8000:8000
     volumes:
-      - ../.:/app
+      - .:/app
     environment:
       - DB_URL=mysqldb:3306
       - DB_USER=root
@@ -31,4 +34,4 @@ services:
       - mysqldb_service
     container_name: mysql-go-server
     networks:
-      - mysql_server
+      - coffee-hai-network
